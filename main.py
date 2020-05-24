@@ -29,21 +29,21 @@ if __name__ == '__main__':
         system.personStayed if stayed else system.personLeft
 
         for queue in system.getQueues():
-            if (queue.curr_pepole_in_queue == 0):
+            if queue.curr_pepole_in_queue == 0:
                 continue
             else:
-                if (queue.curr_service_time > 0 and queue.curr_service_time <= arrived_time):
+                if 0 < queue.curr_service_time <= arrived_time:
                     queue.getServedResident().addTimeInService(queue.curr_service_time)
                     queue.removeResidentFromTheQueue()
+                queue.addWaitingTimeToNonServedResidents(queue.curr_service_time)
                 time_to_add_from_last_iteration = queue.curr_service_time
                 service_time = np.random.poisson(miu)
                 queue.curr_service_time = service_time
                 queue.getServedResident().addTimeInService(queue.curr_service_time)
-                while (service_time + time_to_add_from_last_iteration <= arrived_time):
+                while service_time + time_to_add_from_last_iteration <= arrived_time:
                     queue.removeResidentFromTheQueue()
                     queue.addTimeInService(queue.curr_service_time)
                     service_time = np.random.poisson(miu)
-                    queue.getServedResident().service_time = service_time
+                    queue.getServedResident().addTimeInService(service_time)
                     service_time += service_time + queue.curr_service_time
-                delta = service_time - arrived_time;
-                queue.curr_service_time = delta
+                queue.curr_service_time = service_time - arrived_time
