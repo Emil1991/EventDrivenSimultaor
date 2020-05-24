@@ -1,17 +1,17 @@
-from .demi import CQueue
+from CQueue import CQueue
 
 
 class CSystem:
     queues = {}
 
-    def __init__(self, T, M):
+    def __init__(self, T, M, probabilitySequnce:dict):
         self.timeUnitsPassed = 0
         self.numberOfStayed = 0
         self.numberOfLeft = 0
         self.simulationTime = T
         self.numberOfStations = M
         for i in range(M):
-            self.queues[i] = CQueue()
+            self.queues[i+1] = CQueue(len(probabilitySequnce), probabilitySequnce)
 
     def getCurrentTime(self):
         return self.timeUnitsPassed
@@ -24,6 +24,9 @@ class CSystem:
 
     def personLeft(self):
         self.numberOfStayed -= 1
+
+    def getQueues(self):
+        return self.queues
 
     #---------------------------OUTPUT---------------------------
 
