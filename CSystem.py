@@ -2,8 +2,6 @@ from CQueue import CQueue
 
 
 class CSystem:
-    queues = {}
-
     def __init__(self, T, M, probabilitySequnce:dict):
         self.timeUnitsPassed = 0
         self.numberOfStayed = 0
@@ -52,4 +50,9 @@ class CSystem:
         return 0
 
     def getOutput(self):
-        print("{0} {1} {2}")
+        return 0
+        # getATIString=''
+        #
+        # for i in
+        #
+        # print("{0} {1} {2}")
