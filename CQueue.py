@@ -50,3 +50,7 @@ class CQueue(object):
     def addWaitingTimeToResidents(self, time):
         for resident in self.residents_queue:
             resident.waiting_time += time
+
+    def addWaitingTimeToNonServedResidents(self, time):
+        for resident in self.residents_queue[1:]:
+            resident.waiting_time += time
