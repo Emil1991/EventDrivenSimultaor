@@ -49,4 +49,8 @@ class CSystem:
         return 0
 
     def getOutput(self):
+        getATIString=''
+
+        for i in
+
         print("{0} {1} {2}")
