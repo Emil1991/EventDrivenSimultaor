@@ -19,14 +19,34 @@ class CSystem:
     def addTimeTicks(self, ticks):
         self.timeUnitsPassed += ticks
 
-    def getNumberOfStayed(self):
-        return self.numberOfStayed
-
-    def getNumberOfLeft(self):
-        return self.numberOfLeft
-
     def personStayed(self):
         self.numberOfStayed += 1
 
     def personLeft(self):
         self.numberOfStayed -= 1
+
+    #---------------------------OUTPUT---------------------------
+
+    def getY(self):
+        return self.numberOfStayed
+
+    def getX(self):
+        return self.numberOfLeft
+
+    def getATI(self,i):
+        return 0
+
+    def getZI(self,i):
+        return 0
+
+    def getAW(self):
+        return 0
+
+    def getAS(self):
+        return 0
+
+    def getALambdaA(self):
+        return 0
+
+    def getOutput(self):
+        print("{0} {1} {2}")
