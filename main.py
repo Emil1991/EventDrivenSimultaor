@@ -26,53 +26,53 @@ if __name__ == '__main__':
 
     #========== resident arrival handling ==========
     while(True):
-        arrived_time = np.random.poisson(lamda)
+        arrived_time = np.random.exponential(1/lamda)
         left_time = T - system.timeUnitsPassed
+
         if(arrived_time > left_time):
             break
+
         system.addTimeTicks(arrived_time)
         chosenQueue = np.random.randint(1,3)
-        systemQueues = system.queues
 
-        service_time = np.random.poisson(miu)
+        service_time = np.random.exponential(1/miu)
         resident = CResident(service_time)
+
 
 
         for queue in system.queues:
             if(queue.curr_people_in_queue == 0):
                 continue
             else:
-                if(queue.curr_service_time > 0 and queue.curr_service_time<= arrived_time):
+                time_to_add_from_last_iteration = queue.residents_queue[0].service_time
+                if(queue.residents_queue[0].service_time > 0 and queue.residents_queue[0].service_time <= arrived_time):
+                    queue.addWaitingTimeToResidents(queue.residents_queue[0].service_time)
                     queue.removeResidentFromTheQueue()
-                    queue.addWaitingTimeToResidents(queue.curr_service_time)
                     if (queue.curr_people_in_queue == 0):
                         continue
-                time_to_add_from_last_iteration = queue.curr_service_time
-                service_time = np.random.poisson(miu) ###############
-                queue.curr_service_time = service_time
-                service_time += time_to_add_from_last_iteration
-                queue.residents_queue[0].service_time = queue.curr_service_time
+                # service_time = np.random.poisson(miu)
+                # queue.curr_service_time = service_time
+                # service_time += time_to_add_from_last_iteration
+                # queue.residents_queue[0].service_time = queue.curr_service_time
                 if (queue.curr_people_in_queue == 0):
                     continue
-                while(service_time <= arrived_time):
+                while(queue.residents_queue[0].service_time + time_to_add_from_last_iteration <= arrived_time):
+                    queue.addWaitingTimeToResidents(queue.residents_queue[0].service_time)
+                    time_to_add_from_last_iteration = queue.residents_queue[0].service_time + time_to_add_from_last_iteration
                     queue.removeResidentFromTheQueue()
-                    queue.addWaitingTimeToResidents(queue.curr_service_time)
                     if(queue.curr_people_in_queue == 0):
                         break
-                    new_service_time = np.random.poisson(miu) ##########
-                    queue.residents_queue[0].service_time = service_time
-                    service_time += new_service_time + queue.curr_service_time
                 if (queue.curr_people_in_queue == 0):
                     continue
-                delta = service_time - arrived_time
-                queue.curr_service_time = delta
+                delta = (queue.residents_queue[0].service_time + time_to_add_from_last_iteration) - arrived_time
+                queue.residents_queue[0].service_time = delta
 
-        status = systemQueues[chosenQueue-1].addResidentToTheQueue(resident)
+        status = system.queues[chosenQueue-1].addResidentToTheQueue(resident)
         if(status == False):
             system.numberOfLeft += 1
         else:
             system.numberOfStayed += 1
-
+            system.queues[chosenQueue - 1].service_time_list += resident.service_time
     #====================================================
 
     #= after stop arrivals, manage service time left (till T) in the queues =====
@@ -81,26 +81,28 @@ if __name__ == '__main__':
         if (queue.curr_people_in_queue == 0):
             continue
         else:
-            if (queue.curr_service_time > 0 and queue.curr_service_time <= left_time):
+            time_to_add_from_last_iteration = queue.residents_queue[0].service_time
+            if (queue.residents_queue[0].service_time > 0 and queue.residents_queue[0].service_time <= left_time):
+                queue.addWaitingTimeToResidents(queue.residents_queue[0].service_time)
                 queue.removeResidentFromTheQueue()
-                queue.addWaitingTimeToResidents(queue.curr_service_time)
                 if (queue.curr_people_in_queue == 0):
                     continue
-            time_to_add_from_last_iteration = queue.curr_service_time
-            service_time = np.random.poisson(miu)
-            queue.curr_service_time = service_time
-            service_time += time_to_add_from_last_iteration
-            queue.residents_queue[0].service_time = queue.curr_service_time
-            while (service_time <= left_time):
+            # service_time = np.random.poisson(miu)
+            # queue.curr_service_time = service_time
+            # service_time += time_to_add_from_last_iteration
+            # queue.residents_queue[0].service_time = queue.curr_service_time
+            if (queue.curr_people_in_queue == 0):
+                continue
+            while (queue.residents_queue[0].service_time + time_to_add_from_last_iteration <= left_time):
+                queue.addWaitingTimeToResidents(queue.residents_queue[0].service_time)
+                time_to_add_from_last_iteration = queue.residents_queue[0].service_time + time_to_add_from_last_iteration
                 queue.removeResidentFromTheQueue()
-                queue.addWaitingTimeToResidents(queue.curr_service_time)
                 if (queue.curr_people_in_queue == 0):
-                    continue
-                service_time = np.random.poisson(miu)
-                queue.residents_queue[0].service_time = service_time
-                service_time += service_time + queue.curr_service_time
-            delta = service_time - left_time
-            queue.curr_service_time = delta
+                    break
+            if (queue.curr_people_in_queue == 0):
+                continue
+            delta = (queue.residents_queue[0].service_time + time_to_add_from_last_iteration) - left_time
+            queue.residents_queue[0].service_time = delta
     #===========================================================
 
     #== after stop arrivals, finish with the residents who still inside the queues ====
@@ -109,17 +111,17 @@ if __name__ == '__main__':
         if (queue.curr_people_in_queue == 0):
             continue
         else:
-            if (queue.curr_service_time > 0):
+            if (queue.residents_queue[0].service_time > 0):
+                queue.addWaitingTimeToResidents(queue.residents_queue[0].service_time)
+                queue_time_till_empty += queue.residents_queue[0].service_time
                 queue.removeResidentFromTheQueue()
-                queue.addWaitingTimeToResidents(queue.curr_service_time)
-                queue_time_till_empty += queue.curr_service_time
             while(queue.curr_people_in_queue > 0):
-                service_time = np.random.poisson(miu)
-                queue.curr_service_time = service_time
-                queue_time_till_empty += service_time
-                queue.residents_queue[0].service_time = queue.curr_service_time
+                # service_time = np.random.poisson(miu)
+                # queue.curr_service_time = service_time
+                queue_time_till_empty += queue.residents_queue[0].service_time
+                # queue.residents_queue[0].service_time = queue.curr_service_time
+                queue.addWaitingTimeToResidents(queue.residents_queue[0].service_time)
                 queue.removeResidentFromTheQueue()
-                queue.addWaitingTimeToResidents(queue.curr_service_time)
             if(queue_time_till_empty > maximum_time_left_in_queues):
                 maximum_time_left_in_queues = queue_time_till_empty
     #=====================================================================================
@@ -128,5 +130,4 @@ if __name__ == '__main__':
     system.ALamdaA = system.timeUnitsPassed / system.numberOfStayed
     system.addTimeTicks(maximum_time_left_in_queues+left_time)
     print(system.numberOfStayed, system.numberOfLeft, system.timeUnitsPassed, system.getAW(), system.getAS(), system.getALambdaA())
-    print(iterations_number)
     #=================================================================

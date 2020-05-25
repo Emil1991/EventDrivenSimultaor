@@ -34,7 +34,6 @@ class CQueue(object):
     def removeResidentFromTheQueue(self):
         resident = self.residents_queue[0]
         self.wait_time_list += resident.waiting_time
-        self.service_time_list += resident.service_time
         self.residents_queue.remove(self.residents_queue[0])
         self.curr_people_in_queue -= 1
 
