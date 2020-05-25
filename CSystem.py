@@ -28,11 +28,36 @@ class CSystem:
 
     #---------------------------OUTPUT---------------------------
 
-    def getATI(self,i):
-        return 0
+    def getATI(self):
+        Ati_list = []
+        i = 0
+        while(i <= self.queues[0].max_people_in_queue):
+            Ati_list.append(0)
+            i += 1
+        for queue in self.queues:
+            i = 0
+            while(i <= queue.max_people_in_queue):
+                Ati_list[i] += queue.time_per_amount_of_people[i]
+                i += 1
+        i = 0
+        while (i <= queue.max_people_in_queue):
+            Ati_list[i] = Ati_list[i] / self.numberOfStations
+            i += 1
+        return Ati_list
 
-    def getZI(self,i):
-        return 0
+    def getZI(self):
+        list = []
+        i = 0
+        while(i <= self.queues[0].max_people_in_queue):
+            list.append(0)
+            i += 1
+
+        Ati = self.getATI()
+        i = 0
+        while (i < len(list)):
+            list[i] = Ati[i] / self.timeUnitsPassed
+            i += 1
+        return list
 
     def getAW(self):
         total_waiting_time = 0
