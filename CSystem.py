@@ -54,7 +54,7 @@ class CSystem:
         return float(total_service_time / self.numberOfStayed)
 
     def getALambdaA(self):
-        return 0
+        return self.ALamdaA / self.numberOfStayed
 
     def getOutput(self):
         print("{0} {1} {2}")
