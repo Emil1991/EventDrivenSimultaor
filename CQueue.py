@@ -12,20 +12,18 @@ class CQueue(object):
         self.curr_service_time = 0
         self.wait_time_list = 0
         self.service_time_list = 0
-        self.time_per_amount_of_people = {}
         self.residents_queue:List[CResident] = []
+
+    def decision(self, probability):
+        return random.random() < probability
 
     def addResidentToTheQueue(self, resident:CResident)->bool:
         if(self.curr_people_in_queue == self.max_people_in_queue):
             return False
 
-        range = self.probabilities_to_stay_per_amount_of_people[self.curr_people_in_queue]*10
-        if(range == 10.0):
-            self.residents_queue.append(resident)
-            self.curr_people_in_queue += 1
-            return True
-
-        if( random.random_integers(1,10,1)[0] >= range ):
+        probability = self.probabilities_to_stay_per_amount_of_people[self.curr_people_in_queue]
+        stat = self.decision(probability)
+        if( stat == False ):
             return False
 
         else:
@@ -40,9 +38,9 @@ class CQueue(object):
         self.residents_queue.remove(self.residents_queue[0])
         self.curr_people_in_queue -= 1
 
-    def getResidentsQueue(self):
-        return self.residents_queue
-
     def addWaitingTimeToResidents(self,time):
         for resident in self.residents_queue:
             resident.waiting_time += time
+
+
+

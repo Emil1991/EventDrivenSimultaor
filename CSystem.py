@@ -2,7 +2,7 @@ from CQueue import CQueue
 
 
 class CSystem:
-    queues = {}
+    queues = []
 
     def __init__(self, T, M, probabilitySequnce:dict):
         self.timeUnitsPassed = 0
@@ -10,8 +10,9 @@ class CSystem:
         self.numberOfLeft = 0
         self.simulationTime = T
         self.numberOfStations = M
+        self.ALamdaA = 0
         for i in range(M):
-            self.queues[i+1] = CQueue(len(probabilitySequnce), probabilitySequnce)
+            self.queues.append(CQueue(len(probabilitySequnce), probabilitySequnce))
 
     def getCurrentTime(self):
         return self.timeUnitsPassed
@@ -25,8 +26,6 @@ class CSystem:
     def personLeft(self):
         self.numberOfStayed -= 1
 
-    def getQueues(self):
-        return self.queues
 
     #---------------------------OUTPUT---------------------------
 
@@ -43,10 +42,16 @@ class CSystem:
         return 0
 
     def getAW(self):
-        return 0
+        total_waiting_time = 0
+        for queue in self.queues:
+            total_waiting_time += queue.wait_time_list
+        return float(total_waiting_time / self.numberOfStayed)
 
     def getAS(self):
-        return 0
+        total_service_time = 0
+        for queue in self.queues:
+            total_service_time += queue.service_time_list
+        return float(total_service_time / self.numberOfStayed)
 
     def getALambdaA(self):
         return 0
