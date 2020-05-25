@@ -10,7 +10,6 @@ class CSystem:
         self.numberOfLeft = 0
         self.simulationTime = T
         self.numberOfStations = M
-        self.ALamdaA = 0
         for i in range(M):
             self.queues.append(CQueue(len(probabilitySequnce), probabilitySequnce))
 
@@ -28,12 +27,6 @@ class CSystem:
 
 
     #---------------------------OUTPUT---------------------------
-
-    def getY(self):
-        return self.numberOfStayed
-
-    def getX(self):
-        return self.numberOfLeft
 
     def getATI(self,i):
         return 0
@@ -54,7 +47,8 @@ class CSystem:
         return float(total_service_time / self.numberOfStayed)
 
     def getALambdaA(self):
-        return self.ALamdaA / self.numberOfStayed
+        total_avg = 0
+        for queue in self.queues:
+            total_avg += queue.total_residents / queue.arrivals_time
+        return total_avg / self.numberOfStations
 
-    def getOutput(self):
-        print("{0} {1} {2}")

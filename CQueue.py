@@ -13,6 +13,8 @@ class CQueue(object):
         self.wait_time_list = 0
         self.service_time_list = 0
         self.residents_queue:List[CResident] = []
+        self.total_residents = 0
+        self.arrivals_time = 0
 
     def decision(self, probability):
         return random.random() < probability
@@ -29,6 +31,8 @@ class CQueue(object):
         else:
             self.residents_queue.append(resident)
             self.curr_people_in_queue += 1
+            self.total_residents += 1
+            self.service_time_list += resident.service_time
             return True
 
     def removeResidentFromTheQueue(self):

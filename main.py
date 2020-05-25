@@ -33,6 +33,7 @@ if __name__ == '__main__':
         if(arrived_time > left_time):
             break
 
+
         system.addTimeTicks(arrived_time)
         chosenQueue = np.random.randint(1,M+1)
 
@@ -82,10 +83,10 @@ if __name__ == '__main__':
         status = system.queues[chosenQueue-1].addResidentToTheQueue(resident)
         if(status == False):
             system.numberOfLeft += 1
-            # print(system.queues[chosenQueue-1].curr_people_in_queue)
         else:
             system.numberOfStayed += 1
-            system.queues[chosenQueue - 1].service_time_list += resident.service_time
+            arrival_delta_for_this_queue = system.timeUnitsPassed - system.queues[chosenQueue - 1].arrivals_time
+            system.queues[chosenQueue - 1].arrivals_time += arrival_delta_for_this_queue
     #====================================================
 
     #= after stop arrivals, manage service time left (till T) in the queues =====
@@ -152,7 +153,6 @@ if __name__ == '__main__':
     #=====================================================================================
 
     #================== prints outputs ==============================
-    system.ALamdaA = system.timeUnitsPassed / system.numberOfStayed
     system.addTimeTicks(maximum_time_left_in_queues+left_time)
-    print(system.numberOfStayed, system.numberOfLeft, system.timeUnitsPassed, system.getAW(), system.getAS(), system.ALamdaA)
+    print(system.numberOfStayed, system.numberOfLeft, system.timeUnitsPassed, system.getAW(), system.getAS(), system.getALambdaA())
     #=================================================================
